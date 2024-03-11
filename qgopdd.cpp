@@ -6,6 +6,7 @@
 #include <QWebChannel>
 #include <QWebEnginePage>
 #include <QTimer>
+#include "curl/curl.h"
 // #include "fineftp/server.h"
 
 QGOPDD::QGOPDD(QWidget *parent)
@@ -197,9 +198,10 @@ void QGOPDD::on_BtnGotoStation_clicked(bool check)
       // static int a = 1;
       igs_page->runJavaScript(js_input_sta_name); {
         igs_page->runJavaScript(
-            "document.getElementById('id_search').dispatchEvent(new Event('change'));");
-            // [=](const QVariant& res) {
+            "document.getElementById('id_search').dispatchEvent(new Event('change'));",
+            [=](const QVariant& res) {
               if (sta_name == "") return;
+              qDebug() << igs_page->isLoading();
               QTimer* timer = new QTimer();
               connect(timer, &QTimer::timeout, this, [=](){
                 QString sta_fly = "document.getElementById('" + sta_name
@@ -210,9 +212,11 @@ void QGOPDD::on_BtnGotoStation_clicked(bool check)
                 // igs_page->runJavaScript("document.getElementById('id_search').value = '';");
                 timer->stop();
               });
-              timer->start(3000);
-              return;
-            // });
+              qDebug() << igs_page->isLoading();
+              timer->start(4000);
+
+              // return;
+            });
         // igs_page->runJavaScript("document.querySelector('.btn.btn-primary.fly-btn').click()");
         // QString js_click_search_button = "var search_button "
         //                                  "= document.querySelector('.btn.btn-success').click();";

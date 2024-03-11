@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
+# set(CMAKE_CXX_COMPILER "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/bin/Hostx64/x64/cl.exe")
 project(QGOPDD VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
@@ -9,8 +10,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(VCPKG_ROOT "C:/vcpkg/vcpkg")
-set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+# set(VCPKG_ROOT "C:/vcpkg/vcpkg")
+# set(CMAKE_TOOLCHAIN_FILE ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+
+
 
 # cmake_print_properties(VCPKG_ROOT)
 
@@ -29,6 +32,8 @@ set(PROJECT_SOURCES
 )
 
 
+add_subdirectory(./thirdparty/curl)
+include_directories(./thirdparty/curl/include)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QGOPDD
@@ -42,6 +47,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         vcpkg.json
         vcpkg-configuration.json
         CMakePresets.json
+
     )
 
 # find_package(fineftp CONFIG REQUIRED)
@@ -113,5 +119,7 @@ endif()
 #     simpleftp.scxml
 # )
 
-find_package(CURL REQUIRED)
-target_link_libraries(main PRIVATE CURL::libcurl)
+
+
+# find_package(CURL REQUIRED)
+# target_link_libraries(QGOPDD PRIVATE CURL::libcurl)
