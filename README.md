@@ -23,6 +23,8 @@ Run the command line behind.
 ```
 git clone https://github.com/yhw605/QGOPDD.git
 cd QGOPDD
-cmake -B build
+cmake -DQt6_DIR:PATH=path/to/lib/cmake/Qt6 -DQt6CoreTools_DIR:PATH=path/to/cmake/lib/Qt6CoreTools -DQt6Core_DIR:PATH=path/to/lib/cmake/Qt6Core -DQt6GuiTools_DIR:PATH=path/to/lib/cmake/Qt6GuiTools -DQt6Gui_DIR:PATH=path/to/lib/cmake/Qt6Gui -DQt6Network_DIR:PATH=path/to/lib/cmake/Qt6Network -DQt6Sql_DIR:PATH=path/to/lib/cmake/Qt6Sql -DQt6WebChannel_DIR:PATH=path/to/lib/cmake/Qt6WebChannel -DQt6WebEngineCoreTools_DIR:PATH=path/to/lib/cmake/Qt6WebEngineCoreTools -DQt6WebEngineCore_DIR:PATH=path/to/lib/cmake/Qt6WebEngineCore -DQt6WebEngineWidgets_DIR:PATH=path/to/lib/cmake/Qt6WebEngineWidgets -DQt6WidgetsTools_DIR:PATH=path/to/lib/cmake/Qt6WidgetsTools -DQt6Widgets_DIR:PATH=path/to/lib/cmake/Qt6Widgets -B build
 cmake --build build
 ```
+"path/to/..." is the location of those Qt environments, or you can store them to your PC.
+And then, you should use windeployqt.exe and copy libcurl.dll to your build dir(I tried and it is useful) or linuxdeployqt(I haven't tried). After that, you can run it successfully!
