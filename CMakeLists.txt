@@ -7,7 +7,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(VCPKG_ROOT "C:/vcpkg/vcpkg")
@@ -17,7 +17,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # cmake_print_properties(VCPKG_ROOT)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets WebEngineWidgets Sql Network)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets WebEngineWidgets Sql Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets WebEngineWidgets Sql Network)
 
 
@@ -29,11 +29,21 @@ set(PROJECT_SOURCES
         qgopdd.cpp
         qgopdd.h
         qgopdd.ui
+        igs_stations.json
 )
 
 
 add_subdirectory(./thirdparty/curl)
 include_directories(./thirdparty/curl/include)
+# find_package(CURL REQUIRED)
+# target_link_libraries(QGOPDD PRIVATE curl::curl)
+
+add_subdirectory(./thirdparty/zlib)
+include_directories(./thirdparty/zlib)
+
+# add_subdirectory(./thirdparty/7z)
+# add_subdirectory(./thirdparty/libarchive)
+# include_directories(./thirdparty/libarchive/libarchive)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QGOPDD
@@ -41,13 +51,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         igs_stations.json
         # vcpkg.json
-        vcpkg-configuration.json
+        # vcpkg-configuration.json
         ftpdownloader.h ftpdownloader.cc
         calendarwidget.h calendarwidget.cc calendarwidget.ui
-        vcpkg.json
-        vcpkg-configuration.json
-        CMakePresets.json
-
+        progresscaller.h progresscaller.cc progresscaller.ui
+        # vcpkg.json
+        # vcpkg-configuration.json
+        # CMakePresets.json
     )
 
 # find_package(fineftp CONFIG REQUIRED)
@@ -77,6 +87,7 @@ target_link_libraries(QGOPDD PUBLIC
     Qt::Widgets
     Qt::Sql
     Qt::Network
+    CURL::libcurl
 )
 
 # set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/thirdparty/fineftp-server/cmake/fineftp-module")

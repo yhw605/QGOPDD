@@ -13,6 +13,8 @@
 #include <QDate>
 
 #include "calendarwidget.h"
+#include "progresscaller.h"
+#include "ftpdownloader.h"
 // #include "fineftp/server.h"
 
 class Stations {
@@ -33,14 +35,18 @@ private:
 
 class DataDate { // Storing the begin and end of data waiting for downloading
 public:
+  DataDate(QDate date) : date_(date) {this->doy_ = date.dayOfYear(), this->year_ = date.year();}
   DataDate(int year, int doy) : doy_(doy), year_(year){}
   DataDate() {}
   int GetYear() {return year_;}
   int GetDayOfYear() {return doy_;}
   void SetYear(int yy) {this->year_ = yy;}
   void SetDayOfYear(int doy) {this->doy_ = doy;}
+  QDate GetDate() {return date_;}
+  void SetDate(QDate d) {this->date_ = d;}
 private:
   int doy_ = 0, year_ = 0;
+  QDate date_;
 };
 
 QT_BEGIN_NAMESPACE
@@ -66,6 +72,10 @@ public:
 
   QWebEnginePage* igs_page;
 
+  QStringList waiting_list;
+
+  QStringList GetWaitingDownloadList();
+
 public slots:
   void GetEndDateSelected(QDate date);
 
@@ -78,13 +88,15 @@ private slots:
 
   void on_BtnBeginCalendar_clicked(bool checked);
 
-
-
   void on_BtnGotoStation_clicked(bool check);
+
+  void on_BtnStartDownload_clicked();
 
 private:
   Ui::QGOPDD *ui;
   CalendarWidget* begincalender = new CalendarWidget(),* endcalendar = new CalendarWidget();
+  ProgressCaller* progress_caller = new ProgressCaller();
+  FtpDownloader* ftp_downloader = new FtpDownloader();
 };
 
 class IgsNetwork : public QWidget {
