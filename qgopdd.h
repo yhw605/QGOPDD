@@ -92,11 +92,16 @@ private slots:
 
   void on_BtnStartDownload_clicked();
 
+  void on_BtnDownloadDir_clicked();
+
 private:
   Ui::QGOPDD *ui;
+  QString working_directory_ = "";
   CalendarWidget* begincalender = new CalendarWidget(),* endcalendar = new CalendarWidget();
   ProgressCaller* progress_caller = new ProgressCaller();
   FtpDownloader* ftp_downloader = new FtpDownloader();
+  QString GetWd() {return working_directory_;}
+  void SetWd(QString wd) {working_directory_ = wd;}
 };
 
 class IgsNetwork : public QWidget {

@@ -259,12 +259,27 @@ void QGOPDD::on_BtnStartDownload_clicked() {
     QString url = "ftp://igs.gnsswhu.cn/pub/gps/data/daily/" + QString::number(year)
                   + "/" + QString::number(doy).rightJustified(3, '0') + "/" + syear + "d/";
     this->ftp_downloader->FetchFileList(url);
-
+    QString path = this->GetWd() + "/" + QString::number(doy).rightJustified(3, '0');
     for (auto sta : waiting_list) {
-      this->ftp_downloader->DownloadGnssObs("", url, sta);
+      this->ftp_downloader->DownloadGnssObs(path, url, sta);
     }
     curr_date = curr_date.addDays(1);
+    this->ftp_downloader->ClearFilelist();
   }
 
+}
+
+
+void QGOPDD::on_BtnDownloadDir_clicked()
+{
+  QString ini_path = "";
+  QString dialog_title = "Select download directory.";
+  // QFileDialog* dialog = new QFileDialog(this);
+  QString workdir = QFileDialog::getExistingDirectory();
+  this->SetWd(workdir);
+  this->ftp_downloader->SetWd(workdir);
+  ui->LineDownloadDir->setText(workdir);
+  // dialog->setFileMode(QFileDialog::Director);
+  // dialog.
 }
 

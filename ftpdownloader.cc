@@ -66,14 +66,21 @@ void FtpDownloader::FetchFileList(QString ftp_addr, QString username, QString pa
   curl_global_init(CURL_GLOBAL_DEFAULT);
   // std::shared_ptr<CURL> curl = std::make_shared<CURL>((CURL*)curl_easy_init());
   CURL* curl = curl_easy_init();
+  QStringList* tmp = new QStringList(ftp_addr.split('/'));
+  QString sdoy = tmp->at(tmp->size() - 3);
+  QString str_curr_dir = this->GetWd() + "/" + sdoy;
+  QDir curr_dir(str_curr_dir);
+  if (!curr_dir.exists()) {
+    curr_dir.mkdir(str_curr_dir);
+  }
   // curl.reset(curl_easy_init());
-  FtpFile filelist{"SHA512SUMS", nullptr};
+  FtpFile filelist{this->GetWd() + "/" + sdoy + "/SHA512SUMS", nullptr};
 
   // curl = curl_easy_init();
 
   DownloadFtpFile(curl, filelist, ftp_addr);
 
-  QFile read_file_list("SHA512SUMS");
+  QFile read_file_list(this->GetWd() + "/" + sdoy + "/SHA512SUMS");
   read_file_list.open(QIODevice::ReadOnly);
   QTextStream filelist_stream{read_file_list.readAll()};
   qDebug() << read_file_list.isOpen();
@@ -108,8 +115,9 @@ void FtpDownloader::DownloadGnssObs(QString path, QString url, QString sta_name,
   auto file_list = this->GetFileList();
 
   QString filename = GetRinexFilename(sta_name.mid(0, 4), file_list);
+  QString path_to_file = path + "/" + filename;
 
-  FtpFile file{filename, nullptr};
+  FtpFile file{path_to_file, nullptr};
   curl_global_init(CURL_GLOBAL_DEFAULT);
   curl = curl_easy_init();
 
@@ -156,7 +164,7 @@ void FtpDownloader::DownloadGnssObs(QString path, QString url, QString sta_name,
     }
   }
   curl_global_cleanup();
-
+  fclose(file.stream);
   std::filesystem::path directory{path.toStdString()};
   // std::filesystem::path sys_filename{filename.toStdString()};
   std::filesystem::path fullpath = directory / sta_name.toStdString();

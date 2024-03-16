@@ -18,6 +18,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # cmake_print_properties(VCPKG_ROOT)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets WebEngineWidgets Sql Network)
+# find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets WebEngineWidgets Sql Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets WebEngineWidgets Sql Network)
 
 
