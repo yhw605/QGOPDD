@@ -76,6 +76,20 @@ public:
 
   QStringList GetWaitingDownloadList();
 
+  void SetDownloadType(QString type) {
+    this->download_type_[type] = true;
+  }
+
+  QVector<bool> CheckDownloadType(QStringList products) {
+    QVector<bool> ret;
+    for (auto product_type : products) {
+      if (this->download_type_[product_type]) {
+        ret.append(this->download_type_[product_type]);
+      }
+    }
+    return ret;
+  }
+
 public slots:
   void GetEndDateSelected(QDate date);
 
@@ -94,6 +108,12 @@ private slots:
 
   void on_BtnDownloadDir_clicked();
 
+  void on_CheckBoxBrdm_stateChanged(int arg1);
+
+  void on_CheckBoxBrd4_stateChanged(int arg1);
+
+  void on_CheckBoxSp3_stateChanged(int arg1);
+
 private:
   Ui::QGOPDD *ui;
   QString working_directory_ = "";
@@ -102,6 +122,15 @@ private:
   FtpDownloader* ftp_downloader = new FtpDownloader();
   QString GetWd() {return working_directory_;}
   void SetWd(QString wd) {working_directory_ = wd;}
+  QMap<QString, bool> download_type_{
+      {"BRDM", false},
+      {"BRD4", false},
+      {"CLK", false},
+      {"EPH", false},
+      {"SP3", false},
+      {"ION", false},
+      {"DCB", false}
+  };
 };
 
 class IgsNetwork : public QWidget {

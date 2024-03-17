@@ -11,7 +11,8 @@
 #include <format>
 #include <QTime>
 
-constexpr int LONG_RNX_NAME_LEN_GZ = 41;
+constexpr int LONG_RNX_OBS_NAME_LEN_GZ = 41;
+constexpr int LONG_RNX_NAV_NAME_LEN_GZ = 37;
 constexpr int SHORT_RNX_NAME_LEN_GZ = 15;
 
 #include <curl/curl.h>
@@ -62,7 +63,7 @@ QString GetRinexFilename(QString sta_name, QStringList file_list) {
   return "";
 }
 
-void FtpDownloader::FetchFileList(QString ftp_addr, QString username, QString password) {
+void FtpDownloader::FetchFileList(QString ftp_addr, QString filename, QString username, QString password) {
   curl_global_init(CURL_GLOBAL_DEFAULT);
   // std::shared_ptr<CURL> curl = std::make_shared<CURL>((CURL*)curl_easy_init());
   CURL* curl = curl_easy_init();
@@ -75,12 +76,15 @@ void FtpDownloader::FetchFileList(QString ftp_addr, QString username, QString pa
   }
   // curl.reset(curl_easy_init());
   FtpFile filelist{this->GetWd() + "/" + sdoy + "/SHA512SUMS", nullptr};
-
+  if (filename == "") {
+  } else {
+    filelist.filename = this->GetWd() + "/" + sdoy + "/" + filename;
+  }
   // curl = curl_easy_init();
 
   DownloadFtpFile(curl, filelist, ftp_addr);
 
-  QFile read_file_list(this->GetWd() + "/" + sdoy + "/SHA512SUMS");
+  QFile read_file_list(filelist.filename);
   read_file_list.open(QIODevice::ReadOnly);
   QTextStream filelist_stream{read_file_list.readAll()};
   qDebug() << read_file_list.isOpen();
@@ -90,7 +94,8 @@ void FtpDownloader::FetchFileList(QString ftp_addr, QString username, QString pa
     for (int i = 0; i < line_list.size(); ++i) {
       int len = line_list[i].size();
       switch (len) {
-        case LONG_RNX_NAME_LEN_GZ:
+        case LONG_RNX_OBS_NAME_LEN_GZ:
+        case LONG_RNX_NAV_NAME_LEN_GZ:
         case SHORT_RNX_NAME_LEN_GZ:
           file_list_.push_back(line_list[i]);
       }
@@ -107,14 +112,13 @@ void FtpDownloader::DownloadGnssObs(QString path, QString url, QString sta_name,
 
   CURL* curl;
   qDebug() << url;
-  // first: download the filename list
-  // struct FtpFile filelist = {
-  //     "SHA512SUMS",
-  //     NULL,
-  // };
+
   auto file_list = this->GetFileList();
 
   QString filename = GetRinexFilename(sta_name.mid(0, 4), file_list);
+  if (filename.isEmpty()) {
+    return;
+  }
   QString path_to_file = path + "/" + filename;
 
   FtpFile file{path_to_file, nullptr};
@@ -134,33 +138,11 @@ void FtpDownloader::DownloadGnssObs(QString path, QString url, QString sta_name,
       size_t size;
     };
 
-    // ret |= curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, [](void *clientp,
-    //                                                            curl_off_t dltotal,
-    //                                                            curl_off_t dlnow,
-    //                                                            curl_off_t ultotal,
-    //                                                            curl_off_t ulnow){
-    //   // Progress* memory = (Progress*)clientp;
-    //   CURL* curl = static_cast<CURL*>(clientp);
-    //   // qDebug() << std::format("my ptr: {}\n", memory->my_private);
-    //   double speed = .0;
-    //   QString unit = "B";
-
-    //   curl_easy_getinfo(curl, CURLINFO_SPEED_DOWNLOAD, &speed);
-    //   double left_total = static_cast<double>(dltotal - dlnow);
-    //   double left_time = .0;
-    //   if (std::fabs(speed) < 1e-5) {
-    //     left_time = (left_total) / speed;
-    //     int hours = left_time / 3600;
-    //     int minutes = (left_time - hours * 3600) / 60;
-    //     int seconds = left_time - hours * 3600 - minutes * 60;
-    //     qDebug() << std::format("Left time: {}h{}m{}s", hours, minutes, seconds);
-    //   }
-
-    //   return 0;
-    // });
+    qDebug() << "Filename: " + QString(file.filename);
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
       qDebug() << "Curl meets error " + QString(curl_easy_strerror(res));
+
     }
   }
   curl_global_cleanup();

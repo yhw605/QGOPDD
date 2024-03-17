@@ -42,6 +42,12 @@ include_directories(./thirdparty/curl/include)
 add_subdirectory(./thirdparty/zlib)
 include_directories(./thirdparty/zlib)
 
+add_subdirectory(./thirdparty/hatanaka/rnxcmp/source)
+set(CRX2RNX_SOURCE_DIR ./thirdparty/hatanaka/rnxcmp/source)
+set(CRX2RNX_SOURCES ./thirdparty/hatanaka/rnxcmp/source/crx2rnx.c)
+set(CRX2RNX_BINARY_DIR ./)
+# add_executable(crx2rnx ./thirdparty/hatanaka/rnxcmp/source/crx2rnx.c)
+
 # add_subdirectory(./thirdparty/7z)
 # add_subdirectory(./thirdparty/libarchive)
 # include_directories(./thirdparty/libarchive/libarchive)
@@ -56,11 +62,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ftpdownloader.h ftpdownloader.cc
         calendarwidget.h calendarwidget.cc calendarwidget.ui
         progresscaller.h progresscaller.cc progresscaller.ui
+        # ${CRX2RNX_SOURCES}
         # vcpkg.json
         # vcpkg-configuration.json
         # CMakePresets.json
     )
-
+# add_executable()
+add_dependencies(QGOPDD CRX2RNX)
 # find_package(fineftp CONFIG REQUIRED)
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QGOPDD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -89,6 +97,7 @@ target_link_libraries(QGOPDD PUBLIC
     Qt::Sql
     Qt::Network
     CURL::libcurl
+    # CRX2RNX
 )
 
 # set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/thirdparty/fineftp-server/cmake/fineftp-module")

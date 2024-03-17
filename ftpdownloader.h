@@ -16,6 +16,9 @@ public:
   explicit FtpDownloader(QObject *parent = nullptr);
   void DownloadGnssObs(QString path, QString url, QString sta_name,
                        QString username = "anonymous", QString password = "");
+
+  // void DownloadGnssNav()
+
   QStringList GetFileList() {
     return file_list_;
   }
@@ -36,7 +39,7 @@ private:
   QStringList file_list_;
   QString download_dir_;
   double download_file_len_ = .0, local_file_len = .0;
-  void FetchFileList(QString ftp_addr, QString username = "", QString password = "");
+  void FetchFileList(QString ftp_addr, QString filename = "", QString username = "", QString password = "");
 };
 
 #endif // FTPDOWNLOADER_H

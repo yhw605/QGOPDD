@@ -12,3 +12,7 @@ ProgressCaller::~ProgressCaller()
 {
   delete ui;
 }
+
+void ProgressCaller::SetProgress(int progress) {
+  ui->ProgressBarDownload->setValue(progress);
+}

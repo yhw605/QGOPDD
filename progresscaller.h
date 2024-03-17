@@ -15,6 +15,7 @@ class ProgressCaller : public QWidget
 
 public:
   explicit ProgressCaller(QWidget *parent = nullptr);
+  void SetProgress(int progress);
   ~ProgressCaller();
 
 private:

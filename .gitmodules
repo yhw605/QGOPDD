@@ -10,3 +10,6 @@
 [submodule "thirdparty/freetype"]
 	path = thirdparty/freetype
 	url = https://gitlab.freedesktop.org/freetype/freetype.git
+[submodule "thirdparty/hatanaka"]
+	path = thirdparty/hatanaka
+	url = https://github.com/valgur/hatanaka.git
