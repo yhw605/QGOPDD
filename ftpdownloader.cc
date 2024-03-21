@@ -10,6 +10,7 @@
 #include <QRegularExpression>
 #include <format>
 #include <QTime>
+#include <QProcess>
 
 constexpr int LONG_RNX_OBS_NAME_LEN_GZ = 41;
 constexpr int LONG_RNX_NAV_NAME_LEN_GZ = 37;
@@ -147,7 +148,33 @@ void FtpDownloader::DownloadGnssObs(QString path, QString url, QString sta_name,
   }
   curl_global_cleanup();
   fclose(file.stream);
-  std::filesystem::path directory{path.toStdString()};
+  // std::filesystem::path directory{path.toStdString()};
   // std::filesystem::path sys_filename{filename.toStdString()};
-  std::filesystem::path fullpath = directory / sta_name.toStdString();
+  // std::filesystem::path fullpath = directory / sta_name.toStdString();
+}
+
+void FtpDownloader::ExtractGzFile(QString path, QString sta_name) {
+  QDir dir(path);
+  if (!dir.exists()) {
+    qDebug() << "The file is not exsit.";
+    return;
+  }
+  QStringList filters;
+  filters<< "*.crx.gz"  << "*.rnx.gz" << "*.sp3.gz" << "*.eph.gz" << "*.*o.gz" << "*.*p.gz" << "*.*n.gz";
+  // filters.append("*.rnx.gz"), filters.append("*.sp3.gz");
+  // filters.append("*.eph.gz"), filters.append("*.*o.gz");
+  // filters.append("*.*n.gz"), filters.append("*.*p.gz");
+  QDir::Filters filter_flags = QDir::Files | QDir::NoSymLinks;
+  QDir::SortFlags sort_flags = QDir::Name;
+  QFileInfoList entries = dir.entryInfoList(filters, filter_flags, sort_flags);
+
+  for (auto& entry : entries) {
+    QString filename = entry.absoluteFilePath();
+    // QString fileName = entry.fileName();
+    qDebug() << "Found file:" << filename;
+    QStringList args_gz;
+    args_gz << "-d" << filename;
+    QProcess* process = new QProcess();
+    process->start(MINIGZIP_PATH, args_gz);
+  }
 }

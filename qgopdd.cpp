@@ -6,8 +6,15 @@
 #include <QWebChannel>
 #include <QWebEnginePage>
 #include <QTimer>
+
+#include <thread>
+#include <iostream>
+#include <mutex>
+#include <condition_variable>
 // #include "curl/curl.h"
 // #include "fineftp/server.h"
+
+void Crx2Rnx(QString path);
 
 QGOPDD::QGOPDD(QWidget *parent)
     : QMainWindow(parent)
@@ -218,6 +225,97 @@ QStringList QGOPDD::GetWaitingDownloadList() {
   return stations;
 }
 
+void QGOPDD::StartDownloading(QDate &curr_date, QDate &end_date,
+                              QProgressBar *&progress_bar, int &daydiff) {
+  while (curr_date <= end_date) {
+    int doy = curr_date.dayOfYear();
+    int year = curr_date.year();
+    QString syear = QString::number(year).mid(2, 2);
+
+    QString url =
+        "ftp://igs.gnsswhu.cn/pub/gps/data/daily/" + QString::number(year) +
+        "/" + QString::number(doy).rightJustified(3, '0') + "/" + syear + "d/";
+    this->ftp_downloader->FetchFileList(url);
+    QString path =
+        this->GetWd() + "/" + QString::number(doy).rightJustified(3, '0');
+    int wait_size = waiting_list.size();
+    int i = 0;
+    // progress_bar->setRange(0, wait_size);
+    // progress_bar->show();
+    // progress_bar->update();
+    // progress_bar.te
+    for (auto sta : waiting_list) {
+      this->ftp_downloader->DownloadGnssObs(path, url, sta);
+      i += 1;
+      double progress = static_cast<double>(i) / (daydiff * wait_size);
+      // progress_bar->setFormat("Date: " + curr_date.toString(Qt::ISODate) +
+      //                         ",Downloading station: " + sta + " %v/%m");
+      // progress_bar->setValue(progress * 100);
+      // progress_bar->update();
+    }
+
+    this->ftp_downloader->ClearFilelist();
+    url[url.size() - 2] = 'p';
+    this->ftp_downloader->FetchFileList(url, "SHA512SUMS-NAV");
+    if (ui->CheckBoxBrdm->isChecked()) {
+      this->ftp_downloader->DownloadGnssObs(path, url, "BRDM");
+    }
+    if (ui->CheckBoxBrd4->isChecked()) {
+      this->ftp_downloader->DownloadGnssObs(path, url, "BRD4");
+    }
+    curr_date = curr_date.addDays(1);
+    this->ftp_downloader->ClearFilelist();
+    this->ftp_downloader->ExtractGzFile(path);
+    Crx2Rnx(path);
+    // QProcess::start("./thirdparty/hatanaka/rnxcmp/source/CRX2RNX", {}) ;
+  }
+}
+
+void Crx2Rnx(QString path) {
+  QDir dir(path);
+  if (!dir.exists()) {
+    qDebug() << "The file is not exsit.";
+    return;
+  }
+  QStringList filters;
+  filters<< "*.crx"  << "*.rnx" << "*.sp3" << "*.eph" << "*.*o" << "*.*p" << "*.*n";
+  // filters.append("*.rnx.gz"), filters.append("*.sp3.gz");
+  // filters.append("*.eph.gz"), filters.append("*.*o.gz");
+  // filters.append("*.*n.gz"), filters.append("*.*p.gz");
+  QDir::Filters filter_flags = QDir::Files | QDir::NoSymLinks;
+  QDir::SortFlags sort_flags = QDir::Name;
+  QFileInfoList entries = dir.entryInfoList(filters, filter_flags, sort_flags);
+  for (auto& entry : entries) {
+    auto filename = entry.absoluteFilePath();
+    qDebug() << "Crx File: " << filename;
+    QStringList args_crx;
+    QProcess* process = new QProcess();
+    args_crx << filename;
+    process->start(CRX2RNX_PATH, args_crx);
+  }
+}
+
+bool downloadComplete = false;
+std::mutex mtx;
+void downloadTask(ProgressCaller* caller) {
+  for (int i = 0; i <= 100; ++i) {
+    // 模拟下载延迟
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    // 锁定互斥锁以安全地打印进度
+    std::unique_lock<std::mutex> lock(mtx);
+    QMetaObject::invokeMethod(caller, "UpdateProgress", Qt::QueuedConnection, Q_ARG(int, 1));
+    // std::cout << "Download progress: " << i << "%" << std::endl;
+    lock.unlock();
+  }
+
+  // 下载完成，设置标志
+  {
+    std::lock_guard<std::mutex> lock(mtx);
+    downloadComplete = true;
+  }
+}
+
 
 
 void QGOPDD::on_BtnStartDownload_clicked() {
@@ -255,53 +353,50 @@ void QGOPDD::on_BtnStartDownload_clicked() {
   // QString ftp_src_dir = "ftp://igs.gnsswhu.cn/pub/gps/data/daily/";
   // this->progress_caller->SetProgress(0);
   // this->progress_caller->show();
-  QProgressBar* progress_bar = new QProgressBar();
-  ui->statusBar->addWidget(progress_bar);
   int daydiff = end_date.toJulianDay() - curr_date.toJulianDay() + 1;
   int sta_size = ui->TableWidgetAddedStas->rowCount();
+  QProgressBar* progress_bar = new QProgressBar();
   progress_bar->setRange(0, daydiff * sta_size);
-  // progress_bar->setValue(0);
-  // progress_bar->show();
-  while (curr_date <= end_date) {
-    int doy = curr_date.dayOfYear();
-    int year = curr_date.year();
-    QString syear = QString::number(year).mid(2, 2);
+  // ui->statusBar->addWidget(progress_bar);
+  // this->progress_caller->show();
+  //  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  // for (int i = 0; i <= 100; i += 5) {
+  //   this->progress_caller->SetProgress(i);
+  //   this->progress_caller->RefreshWindow();
+  //   std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  //   // this->progress_caller
+  // }
 
-    QString url = "ftp://igs.gnsswhu.cn/pub/gps/data/daily/" + QString::number(year)
-                  + "/" + QString::number(doy).rightJustified(3, '0') + "/" + syear + "d/";
-    this->ftp_downloader->FetchFileList(url);
-    QString path = this->GetWd() + "/" + QString::number(doy).rightJustified(3, '0');
-    int wait_size = waiting_list.size();
-    int i = 0;
-    // progress_bar->setRange(0, wait_size);
-    // progress_bar->show();
-    // progress_bar->update();
-    // progress_bar.te
-    for (auto sta : waiting_list) {
-      this->ftp_downloader->DownloadGnssObs(path, url, sta);
-      i += 1;
-      double progress = static_cast<double>(i) / (daydiff * wait_size);
-      progress_bar->setFormat("Date: " + curr_date.toString(Qt::ISODate)
-                              + ",Downloading station: " + sta + " %v/%m");
-      progress_bar->setValue(progress * 100);
-      progress_bar->update();
-    }
-    this->ftp_downloader->ClearFilelist();
-    url[url.size() - 2] = 'p';
-    this->ftp_downloader->FetchFileList(url, "SHA512SUMS-NAV");
-    if (ui->CheckBoxBrdm->isChecked()) {
-      this->ftp_downloader->DownloadGnssObs(path, url, "BRDM");
-    }
-    if (ui->CheckBoxBrd4->isChecked()) {
-      this->ftp_downloader->DownloadGnssObs(path, url, "BRD4");
-    }
-    curr_date = curr_date.addDays(1);
-    this->ftp_downloader->ClearFilelist();
-    // QProcess::start("./thirdparty/hatanaka/rnxcmp/source/CRX2RNX", {}) ;
-  }
-  progress_bar->close();
+  // // // progress_bar->setValue(0);
+  // // // progress_bar->show();
+  StartDownloading(curr_date, end_date, progress_bar, daydiff);
+  // // std::thread downloadThread(downloadTask, this->progress_caller);
+
+  // // // 主线程循环检查下载是否完成
+  // // while (true) {
+  // //   // 锁定互斥锁以检查下载完成标志
+  // //   std::unique_lock<std::mutex> lock(mtx);
+  // //   if (downloadComplete) {
+  // //     lock.unlock();
+  // //     break;
+  // //   }
+  // //   lock.unlock();
+  // //   // progress_bar
+  // //   // 等待一段时间再检查
+  // //   std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  // // }
+
+  // // // 等待下载线程结束
+  // // downloadThread.join();
+
+  // std::cout << "Download completed. Exiting program." << std::endl;
+
+
+  // Extract the gz file
+
+
+  // progress_bar->close();
 }
-
 
 void QGOPDD::on_BtnDownloadDir_clicked()
 {

@@ -5,6 +5,9 @@
 #include <QFile>
 #include <QNetworkReply>
 #include <QVector>
+#include <mutex>
+const QString MINIGZIP_PATH = "./thirdparty/zlib/minigzip ";
+const QString CRX2RNX_PATH = "./thirdparty/hatanaka/rnxcmp/source/CRX2RNX";
 // #include "curl/curl.h"
 
 
@@ -32,6 +35,11 @@ public:
   QString GetWd() {return this->download_dir_;}
 
   void ClearFilelist() {this->file_list_.clear();}
+
+  void ExtractGzFile(QString path, QString sta_name = "");
+
+  bool download_complete = false;
+  std::mutex ftp_mtx;
 
 signals:
 

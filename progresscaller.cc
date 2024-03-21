@@ -16,3 +16,8 @@ ProgressCaller::~ProgressCaller()
 void ProgressCaller::SetProgress(int progress) {
   ui->ProgressBarDownload->setValue(progress);
 }
+
+void ProgressCaller::RefreshWindow() {
+  ui->ProgressBarDownload->update();
+  ui->ProgressBarDownload->show();
+}

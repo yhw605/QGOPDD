@@ -1,6 +1,6 @@
 # QGOPDD
 A GNSS Observation&amp;Product Data Downloader based on Qt.
-![main page](./mainpage.png)
+![main page](./src/mainpage.png)
 ## The main idea
 Well, I am a student major in Geodesy, and I am interested in GNSS. After trying some GNSS software tool suites, such as RTKLIB, Net_Diff, gLAB and CGO2, I think maybe create a program for downloading GNSS data is a good practice to polish my C/C++ programming skills and enhance my understanding of the subject.
 ## About
@@ -27,4 +27,4 @@ cmake -DQt6_DIR:PATH=path/to/lib/cmake/Qt6 -DQt6CoreTools_DIR:PATH=path/to/cmake
 cmake --build build
 ```
 "path/to/..." is the location of those Qt environments, or you can store them to your PC.
-And then, you should use windeployqt.exe and copy libcurl.dll to your build dir(I tried and it is useful) or linuxdeployqt(I haven't tried). After that, you can run it successfully!
+And then, you should use windeployqt.exe and copy libcurl.dll to your build dir(I tried and it made sense) or linuxdeployqt(I haven't tried). After that, you can run it successfully!

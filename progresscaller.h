@@ -17,6 +17,15 @@ public:
   explicit ProgressCaller(QWidget *parent = nullptr);
   void SetProgress(int progress);
   ~ProgressCaller();
+  void RefreshWindow();
+
+public slots:
+  void UpdateProgress(int progress) {
+    emit UpdateProgressSignal(progress);
+  }
+
+signals:
+  void UpdateProgressSignal(int progress);
 
 private:
   Ui::ProgressCaller *ui;

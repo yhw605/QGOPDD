@@ -103,7 +103,9 @@ private slots:
   void on_BtnBeginCalendar_clicked(bool checked);
 
   void on_BtnGotoStation_clicked(bool check);
-
+  
+  void StartDownloading(QDate &curr_date, QDate &end_date, QProgressBar *&progress_bar,
+		 int &daydiff);
   void on_BtnStartDownload_clicked();
 
   void on_BtnDownloadDir_clicked();
