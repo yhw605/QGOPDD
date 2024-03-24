@@ -20,15 +20,17 @@ public:
   void RefreshWindow();
 
 public slots:
-  void UpdateProgress(int progress) {
+  void UpdateProgress(int progress); /*{
     emit UpdateProgressSignal(progress);
-  }
+  }*/
 
 signals:
   void UpdateProgressSignal(int progress);
 
 private:
   Ui::ProgressCaller *ui;
+
+  // void Update(int progress)
 };
 
 #endif // PROGRESSCALLER_H

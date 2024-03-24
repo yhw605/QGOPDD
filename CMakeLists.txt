@@ -62,6 +62,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ftpdownloader.h ftpdownloader.cc
         calendarwidget.h calendarwidget.cc calendarwidget.ui
         progresscaller.h progresscaller.cc progresscaller.ui
+        batchdownload.h batchdownload.cc
+
         # ${CRX2RNX_SOURCES}
         # vcpkg.json
         # vcpkg-configuration.json

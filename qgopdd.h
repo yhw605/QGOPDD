@@ -15,6 +15,7 @@
 #include "calendarwidget.h"
 #include "progresscaller.h"
 #include "ftpdownloader.h"
+#include "batchdownload.h"
 // #include "fineftp/server.h"
 
 class Stations {
@@ -47,6 +48,7 @@ public:
 private:
   int doy_ = 0, year_ = 0;
   QDate date_;
+  int gps_week = 0;
 };
 
 QT_BEGIN_NAMESPACE
@@ -60,9 +62,12 @@ class QGOPDD : public QMainWindow {
   Q_OBJECT
 
 public:
+  friend class BatchDownload;
   QGOPDD(QWidget *parent = nullptr);
   ~QGOPDD();
   // std::tuple<QString, qreal, qreal>
+
+  BatchDownload ToBatchDownload();
 
   void AddStationsComboBox(QJsonDocument igs_file);
 
@@ -90,6 +95,9 @@ public:
     return ret;
   }
 
+  void StartDownloading(QDate &curr_date, QDate &end_date,
+                        int &daydiff);
+
 public slots:
   void GetEndDateSelected(QDate date);
 
@@ -104,8 +112,7 @@ private slots:
 
   void on_BtnGotoStation_clicked(bool check);
   
-  void StartDownloading(QDate &curr_date, QDate &end_date, QProgressBar *&progress_bar,
-		 int &daydiff);
+
   void on_BtnStartDownload_clicked();
 
   void on_BtnDownloadDir_clicked();

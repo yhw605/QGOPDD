@@ -6,6 +6,7 @@ ProgressCaller::ProgressCaller(QWidget *parent)
     , ui(new Ui::ProgressCaller)
 {
   ui->setupUi(this);
+  // ui->ProgressBarDownload->setRange(0, 100);
 }
 
 ProgressCaller::~ProgressCaller()
@@ -20,4 +21,8 @@ void ProgressCaller::SetProgress(int progress) {
 void ProgressCaller::RefreshWindow() {
   ui->ProgressBarDownload->update();
   ui->ProgressBarDownload->show();
+}
+
+void ProgressCaller::UpdateProgress(int progress) {
+  SetProgress(progress);
 }

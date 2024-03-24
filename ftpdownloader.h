@@ -6,17 +6,19 @@
 #include <QNetworkReply>
 #include <QVector>
 #include <mutex>
+#include <QThread>
 const QString MINIGZIP_PATH = "./thirdparty/zlib/minigzip ";
 const QString CRX2RNX_PATH = "./thirdparty/hatanaka/rnxcmp/source/CRX2RNX";
 // #include "curl/curl.h"
 
 
-class FtpDownloader : public QObject
+class FtpDownloader : public /*QObject,*/ QThread
 {
   Q_OBJECT
 public:
   friend class QGOPDD;
-  explicit FtpDownloader(QObject *parent = nullptr);
+  friend class BatchDownload;
+  explicit FtpDownloader(QThread *parent = nullptr);
   void DownloadGnssObs(QString path, QString url, QString sta_name,
                        QString username = "anonymous", QString password = "");
 
@@ -42,12 +44,22 @@ public:
   std::mutex ftp_mtx;
 
 signals:
+  void ProgressChanged(int progress);
+  void Finished();
+
+public slots:
+  void DownloadProgress() {
+    progress_ += 1;
+    emit(ProgressChanged(progress_));
+  }
 
 private:
   QStringList file_list_;
   QString download_dir_;
   double download_file_len_ = .0, local_file_len = .0;
-  void FetchFileList(QString ftp_addr, QString filename = "", QString username = "", QString password = "");
+  void FetchFileList(QString ftp_addr, QString filename = "",
+                     QString username = "", QString password = "");
+  int progress_ = 0;
 };
 
 #endif // FTPDOWNLOADER_H

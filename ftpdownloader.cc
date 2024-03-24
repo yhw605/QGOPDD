@@ -18,9 +18,10 @@ constexpr int SHORT_RNX_NAME_LEN_GZ = 15;
 
 #include <curl/curl.h>
 
-FtpDownloader::FtpDownloader(QObject *parent)
-    : QObject{parent}
-{}
+FtpDownloader::FtpDownloader(/*QObject*/QThread *parent)
+    : /*QObject*/QThread{parent} {
+  // connect()
+}
 
 struct FtpFile {
   QString filename = "";
@@ -143,11 +144,12 @@ void FtpDownloader::DownloadGnssObs(QString path, QString url, QString sta_name,
     CURLcode res = curl_easy_perform(curl);
     if (res != CURLE_OK) {
       qDebug() << "Curl meets error " + QString(curl_easy_strerror(res));
-
+      return;
     }
   }
   curl_global_cleanup();
   fclose(file.stream);
+  emit ProgressChanged(progress_++);
   // std::filesystem::path directory{path.toStdString()};
   // std::filesystem::path sys_filename{filename.toStdString()};
   // std::filesystem::path fullpath = directory / sta_name.toStdString();

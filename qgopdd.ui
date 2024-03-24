@@ -444,4 +444,7 @@
  </customwidgets>
  <resources/>
  <connections/>
+ <slots>
+  <slot>BtnDownloadClicked()</slot>
+ </slots>
 </ui>

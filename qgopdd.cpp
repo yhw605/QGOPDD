@@ -6,11 +6,13 @@
 #include <QWebChannel>
 #include <QWebEnginePage>
 #include <QTimer>
+#include <QtConcurrent/QtConcurrent>
 
 #include <thread>
 #include <iostream>
 #include <mutex>
 #include <condition_variable>
+#include <future>
 // #include "curl/curl.h"
 // #include "fineftp/server.h"
 
@@ -21,6 +23,7 @@ QGOPDD::QGOPDD(QWidget *parent)
     , ui(new Ui::QGOPDD)
 {
   ui->setupUi(this);
+  // connect(this, QGOPDD::StartDownloading(QDate&, QDate, QProgressBar*, int), this->progress_caller, ProgressCaller::SetProgress);
   // ui->TableWidgetAddedStas->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
   ui->ComboSeleSta->setEditable(true);
   auto igs_json_file = LoadIgsStationsFromJson("igs_stations.json");
@@ -225,8 +228,24 @@ QStringList QGOPDD::GetWaitingDownloadList() {
   return stations;
 }
 
-void QGOPDD::StartDownloading(QDate &curr_date, QDate &end_date,
-                              QProgressBar *&progress_bar, int &daydiff) {
+BatchDownload QGOPDD::ToBatchDownload() {
+  BatchDownload bd;
+  bd.download_type_ = this->download_type_;
+
+  bd.ftp_downloader->download_complete = this->ftp_downloader->download_complete;
+  bd.ftp_downloader->download_dir_ = this->ftp_downloader->download_dir_;
+  bd.ftp_downloader->download_file_len_ = this->ftp_downloader->download_file_len_;
+  bd.ftp_downloader->file_list_ = this->ftp_downloader->file_list_;
+
+  bd.waiting_list = this->waiting_list;
+  bd.working_directory_ = this->working_directory_;
+  return bd;
+}
+
+void QGOPDD::StartDownloading(QDate &curr_date, QDate &end_date, int &daydiff) {
+  // QThread download_thread;
+  // FtpDownloader* ftp = (this->ftp_downloader);
+  // ftp->moveToThread(&download_thread);
   while (curr_date <= end_date) {
     int doy = curr_date.dayOfYear();
     int year = curr_date.year();
@@ -244,6 +263,7 @@ void QGOPDD::StartDownloading(QDate &curr_date, QDate &end_date,
     // progress_bar->show();
     // progress_bar->update();
     // progress_bar.te
+
     for (auto sta : waiting_list) {
       this->ftp_downloader->DownloadGnssObs(path, url, sta);
       i += 1;
@@ -353,10 +373,12 @@ void QGOPDD::on_BtnStartDownload_clicked() {
   // QString ftp_src_dir = "ftp://igs.gnsswhu.cn/pub/gps/data/daily/";
   // this->progress_caller->SetProgress(0);
   // this->progress_caller->show();
-  int daydiff = end_date.toJulianDay() - curr_date.toJulianDay() + 1;
-  int sta_size = ui->TableWidgetAddedStas->rowCount();
-  QProgressBar* progress_bar = new QProgressBar();
-  progress_bar->setRange(0, daydiff * sta_size);
+  static int daydiff;
+  daydiff = end_date.toJulianDay() - curr_date.toJulianDay() + 1;
+  static int sta_size;
+  sta_size  = ui->TableWidgetAddedStas->rowCount();
+  // QProgressBar* progress_bar = new QProgressBar();
+  // progress_bar->setRange(0, daydiff * sta_size);
   // ui->statusBar->addWidget(progress_bar);
   // this->progress_caller->show();
   //  std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -369,7 +391,21 @@ void QGOPDD::on_BtnStartDownload_clicked() {
 
   // // // progress_bar->setValue(0);
   // // // progress_bar->show();
-  StartDownloading(curr_date, end_date, progress_bar, daydiff);
+  // std::future<void> result;
+  // QGOPDD* q(this);
+  BatchDownload bd = this->ToBatchDownload();
+  // connect(&bd, &BatchDownload::StartDownloading, this, [this] {
+  //   return;
+  // });
+  auto f = std::async(std::bind(&BatchDownload::StartDownloading, &bd, curr_date, end_date, daydiff),
+                      std::launch::async);
+  // QtConcurrent::run(&BatchDownload::StartDownloading, &bd, curr_date, end_date, daydiff);
+  // f.share();
+  // f.get();
+  // std::thread t(std::bind(&QGOPDD::StartDownloading, this, curr_date, end_date, daydiff));
+  // t.join();
+  // StartDownloading(curr_date, end_date, daydiff);
+
   // // std::thread downloadThread(downloadTask, this->progress_caller);
 
   // // // 主线程循环检查下载是否完成
@@ -440,4 +476,3 @@ void QGOPDD::on_CheckBoxSp3_stateChanged(int state)
     this->download_type_["SP3"] = false;
   }
 }
-
