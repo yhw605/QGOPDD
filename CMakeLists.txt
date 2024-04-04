@@ -63,6 +63,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         calendarwidget.h calendarwidget.cc calendarwidget.ui
         progresscaller.h progresscaller.cc progresscaller.ui
         batchdownload.h batchdownload.cc
+        textviewer.h textviewer.cc textviewer.ui
+        tformdoc.h tformdoc.cc tformdoc.ui
+        rinexhighlighter.h rinexhighlighter.cc
+
+
 
         # ${CRX2RNX_SOURCES}
         # vcpkg.json
