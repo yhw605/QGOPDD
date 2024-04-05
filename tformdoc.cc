@@ -13,7 +13,7 @@ TFormDoc::TFormDoc(QWidget *parent)
 {
   ui->setupUi(this);
   this->setWindowTitle("Unnamed.txt[*]");
-  connect(ui->textEdit, &QTextEdit::textChanged, this, &QWidget::setWindowModified);
+  // connect(ui->textEdit, &QTextEdit::textChanged, this, &QWidget::setWindowModified);
 }
 
 TFormDoc::~TFormDoc()

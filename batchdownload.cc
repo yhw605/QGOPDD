@@ -4,11 +4,11 @@ void Crx2Rnx(QString);
 
 BatchDownload::BatchDownload() {}
 
-void BatchDownload::StartDownloading(QDate &curr_date, QDate &end_date, int &daydiff) {
+void BatchDownload::StartDownloading(QDate curr_date, QDate end_date, int daydiff) {
   // QThread download_thread;
   // FtpDownloader* ftp = (this->ftp_downloader);
   // ftp->moveToThread(&download_thread);
-  emit DownloadHasStarted();
+  // emit DownloadHasStarted();
   while (curr_date <= end_date) {
     int doy = curr_date.dayOfYear();
     int year = curr_date.year();

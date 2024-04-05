@@ -2,19 +2,23 @@
 #define BATCHDOWNLOAD_H
 
 #include <QObject>
+#include <QThread>
 #include "ftpdownloader.h"
 // #include "qgopdd.h"
 
-class BatchDownload
+class BatchDownload : public QThread
 {
 public:
-  friend class QGOPDD;
+  friend class QGOPDD;  
   BatchDownload();
+  void run() override {
+    StartDownloading(curr_date_, end_date_, daydiff_);
+  }
   QStringList waiting_list;
-  void StartDownloading(QDate &curr_date, QDate &end_date,
-                        int &daydiff);
+  void StartDownloading(QDate curr_date, QDate end_date,
+                        int daydiff);
 signals:
-  void DownloadHasStarted();
+  // void DownloadHasStarted();
 private:
   QString working_directory_ = "";
   FtpDownloader* ftp_downloader = new FtpDownloader();
@@ -29,6 +33,8 @@ private:
       {"ION", false},
       {"DCB", false}
   };
+  QDate curr_date_, end_date_;
+  int  daydiff_;
 };
 
 #endif // BATCHDOWNLOAD_H

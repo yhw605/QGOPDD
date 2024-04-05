@@ -16,11 +16,11 @@ public:
   ~TFormDoc();
   void LoadFromFile(QString filename);
   void Save2File();
-  QString CurrentFilename();
-  bool IsFileOpened();
-  void TextCut();
-  void TextCopy();
-  void TextPaste();
+  // QString CurrentFilename();
+  // bool IsFileOpened();
+  // void TextCut();
+  // void TextCopy();
+  // void TextPaste();
 
 private:
   Ui::TFormDoc *ui;

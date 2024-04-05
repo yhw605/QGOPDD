@@ -67,7 +67,7 @@ public:
   ~QGOPDD();
   // std::tuple<QString, qreal, qreal>
 
-  BatchDownload ToBatchDownload();
+  BatchDownload* ToBatchDownload();
 
   void AddStationsComboBox(QJsonDocument igs_file);
 

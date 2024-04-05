@@ -50,6 +50,7 @@ QGOPDD::QGOPDD(QWidget *parent)
                       this, SLOT(GetEndDateSelected(QDate)));
   qDebug() << connect(begincalender, SIGNAL(DateSelected(QDate)),
                       this, SLOT(GetBeginDateSelected(QDate)));
+  // qDebug() << connect(ui->BtnStartDownload, &QPushButton::clicked, this, &QGOPDD::on_BtnStartDownload_clicked);
   // qDebug() << connect()
   // ui->CalendarWidgetSelectDate->setLocale(QLocale::English);
   // connect(maincalender, SIGNAL(DateSelected(QDate)), this, SLOT(GetBeginDateSelected(QDate)));
@@ -228,17 +229,17 @@ QStringList QGOPDD::GetWaitingDownloadList() {
   return stations;
 }
 
-BatchDownload QGOPDD::ToBatchDownload() {
-  BatchDownload bd;
-  bd.download_type_ = this->download_type_;
+BatchDownload* QGOPDD::ToBatchDownload() {
+  BatchDownload* bd = new BatchDownload();
+  bd->download_type_ = this->download_type_;
 
-  bd.ftp_downloader->download_complete = this->ftp_downloader->download_complete;
-  bd.ftp_downloader->download_dir_ = this->ftp_downloader->download_dir_;
-  bd.ftp_downloader->download_file_len_ = this->ftp_downloader->download_file_len_;
-  bd.ftp_downloader->file_list_ = this->ftp_downloader->file_list_;
+  bd->ftp_downloader->download_complete = this->ftp_downloader->download_complete;
+  bd->ftp_downloader->download_dir_ = this->ftp_downloader->download_dir_;
+  bd->ftp_downloader->download_file_len_ = this->ftp_downloader->download_file_len_;
+  bd->ftp_downloader->file_list_ = this->ftp_downloader->file_list_;
 
-  bd.waiting_list = this->waiting_list;
-  bd.working_directory_ = this->working_directory_;
+  bd->waiting_list = this->waiting_list;
+  bd->working_directory_ = this->working_directory_;
   return bd;
 }
 
@@ -393,12 +394,18 @@ void QGOPDD::on_BtnStartDownload_clicked() {
   // // // progress_bar->show();
   // std::future<void> result;
   // QGOPDD* q(this);
-  BatchDownload bd = this->ToBatchDownload();
+
+
+  BatchDownload* bd = this->ToBatchDownload();
+  bd->curr_date_ = curr_date, bd->end_date_ = end_date, bd->daydiff_ = daydiff;
+  bd->start();
+
+
   // connect(&bd, &BatchDownload::StartDownloading, this, [this] {
   //   return;
   // });
-  auto f = std::async(std::bind(&BatchDownload::StartDownloading, &bd, curr_date, end_date, daydiff),
-                      std::launch::async);
+  // auto f = std::async(std::bind(&BatchDownload::StartDownloading, &bd, curr_date, end_date, daydiff),
+  //                     std::launch::async);
   // QtConcurrent::run(&BatchDownload::StartDownloading, &bd, curr_date, end_date, daydiff);
   // f.share();
   // f.get();
