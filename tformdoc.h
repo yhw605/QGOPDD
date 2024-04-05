@@ -22,6 +22,13 @@ public:
   // void TextCopy();
   // void TextPaste();
 
+public slots:
+  void setMyWindowModified() {
+    // 由于textChanged信号没有参数，所以槽函数也不需要参数
+    // 你可以在这里根据需要设置窗口标题或其他操作
+    setWindowModified(true); // 假设文本被修改了
+  }
+
 private:
   Ui::TFormDoc *ui;
   QString filename_;

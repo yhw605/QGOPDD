@@ -16,6 +16,7 @@
 #include "progresscaller.h"
 #include "ftpdownloader.h"
 #include "batchdownload.h"
+#include "textviewer.h"
 // #include "fineftp/server.h"
 
 class Stations {
@@ -123,6 +124,8 @@ private slots:
 
   void on_CheckBoxSp3_stateChanged(int arg1);
 
+  void on_BtnOpenDownloadDir_clicked();
+
 private:
   Ui::QGOPDD *ui;
   QString working_directory_ = "";
@@ -140,6 +143,7 @@ private:
       {"ION", false},
       {"DCB", false}
   };
+  TextViewer* text_viewer_ = new TextViewer();
 };
 
 class IgsNetwork : public QWidget {

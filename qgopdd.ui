@@ -398,9 +398,9 @@
                  </widget>
                 </item>
                 <item row="2" column="0">
-                 <widget class="QPushButton" name="pushButton">
+                 <widget class="QPushButton" name="BtnOpenDownloadDir">
                   <property name="text">
-                   <string>Decompress</string>
+                   <string>Open</string>
                   </property>
                  </widget>
                 </item>

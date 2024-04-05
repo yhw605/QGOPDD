@@ -65,6 +65,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         batchdownload.h batchdownload.cc
         # textviewer.h textviewer.cc textviewer.ui
         tformdoc.h tformdoc.cc tformdoc.ui
+        textviewer.cc textviewer.h textviewer.ui
 
 
 

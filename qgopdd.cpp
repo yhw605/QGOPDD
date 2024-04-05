@@ -483,3 +483,14 @@ void QGOPDD::on_CheckBoxSp3_stateChanged(int state)
     this->download_type_["SP3"] = false;
   }
 }
+
+void QGOPDD::on_BtnOpenDownloadDir_clicked()
+{
+  this->text_viewer_->show();
+  QString dirname = ui->LineDownloadDir->text();
+  if (dirname == "") {
+    dirname = QDir::currentPath();
+  }
+  text_viewer_->SetDirname(dirname);
+}
+
