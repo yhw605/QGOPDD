@@ -50,6 +50,7 @@ QGOPDD::QGOPDD(QWidget *parent)
                       this, SLOT(GetEndDateSelected(QDate)));
   qDebug() << connect(begincalender, SIGNAL(DateSelected(QDate)),
                       this, SLOT(GetBeginDateSelected(QDate)));
+  // qDebug() << connect(finished_widget_, SIGNAL())
   // qDebug() << connect(ui->BtnStartDownload, &QPushButton::clicked, this, &QGOPDD::on_BtnStartDownload_clicked);
   // qDebug() << connect()
   // ui->CalendarWidgetSelectDate->setLocale(QLocale::English);
@@ -395,8 +396,11 @@ void QGOPDD::on_BtnStartDownload_clicked() {
   // std::future<void> result;
   // QGOPDD* q(this);
 
-
+  DownloadFinished* df = new DownloadFinished();
   BatchDownload* bd = this->ToBatchDownload();
+  connect(bd, &BatchDownload::DownloadHasFinished, df, [=]() {
+    df->show();
+  });
   bd->curr_date_ = curr_date, bd->end_date_ = end_date, bd->daydiff_ = daydiff;
   bd->start();
 

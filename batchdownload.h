@@ -4,10 +4,12 @@
 #include <QObject>
 #include <QThread>
 #include "ftpdownloader.h"
+#include "downloadfinished.h"
 // #include "qgopdd.h"
 
 class BatchDownload : public QThread
 {
+  Q_OBJECT
 public:
   friend class QGOPDD;  
   BatchDownload();
@@ -19,6 +21,7 @@ public:
                         int daydiff);
 signals:
   // void DownloadHasStarted();
+  void DownloadHasFinished();
 private:
   QString working_directory_ = "";
   FtpDownloader* ftp_downloader = new FtpDownloader();
@@ -35,6 +38,7 @@ private:
   };
   QDate curr_date_, end_date_;
   int  daydiff_;
+  DownloadFinished* finish_widget_ = new DownloadFinished();
 };
 
 #endif // BATCHDOWNLOAD_H

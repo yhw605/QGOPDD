@@ -1,4 +1,5 @@
 #include "batchdownload.h"
+#include <QTimer>
 
 void Crx2Rnx(QString);
 
@@ -52,4 +53,12 @@ void BatchDownload::StartDownloading(QDate curr_date, QDate end_date, int daydif
     Crx2Rnx(path);
     // QProcess::start("./thirdparty/hatanaka/rnxcmp/source/CRX2RNX", {}) ;
   }
+  // QTimer* timer = new QTimer();
+  // auto w = new DownloadFinished();
+  // connect(timer, &QTimer::timeout, w, [=](){
+  //   w->close();
+  //   timer->stop();
+  // });
+  // timer->start(5000);
+  emit DownloadHasFinished();
 }

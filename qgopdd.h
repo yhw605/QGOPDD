@@ -17,6 +17,7 @@
 #include "ftpdownloader.h"
 #include "batchdownload.h"
 #include "textviewer.h"
+#include "downloadfinished.h"
 // #include "fineftp/server.h"
 
 class Stations {
@@ -144,6 +145,7 @@ private:
       {"DCB", false}
   };
   TextViewer* text_viewer_ = new TextViewer();
+  DownloadFinished* finished_widget_ = new DownloadFinished();
 };
 
 class IgsNetwork : public QWidget {

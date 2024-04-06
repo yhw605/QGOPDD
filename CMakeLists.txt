@@ -66,6 +66,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         # textviewer.h textviewer.cc textviewer.ui
         tformdoc.h tformdoc.cc tformdoc.ui
         textviewer.cc textviewer.h textviewer.ui
+        downloadfinished.h downloadfinished.cc downloadfinished.ui
 
 
 

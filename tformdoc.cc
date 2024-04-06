@@ -30,6 +30,18 @@ void TFormDoc::LoadFromFile(QString filename) {
     QTextStream txt_stream(&txtfile);
     ui->textEdit->clear();
     ui->textEdit->setPlainText(txt_stream.readAll());
+    // const int chunkSize = 1024; // 例如，每次读取 1 KB
+    // QByteArray buffer(chunkSize, '\0');
+
+    // // 分块读取文件
+    // while (!txt_stream.atEnd()) {
+    //   auto buf = txt_stream.read(chunkSize);
+    //   // txt_stream.read.readRawData(buffer.data(), chunkSize);
+    //   ui->textEdit->append(buf);
+    //   qApp->processEvents(); // 确保界面可以响应
+    // }
+
+    // // file.close();
     txtfile.close();
 
     this->filename_ = filename;

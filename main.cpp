@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
   QGOPDD w;
   w.show();
   // TFormDoc t;
-  // t.LoadFromFile("igs_stations.json");
+  // t.LoadFromFile("");
   // t.show();
   return a.exec();
 }
