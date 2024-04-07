@@ -28,8 +28,9 @@ void TFormDoc::LoadFromFile(QString filename) {
   QFile txtfile(filename);
   if (txtfile.open(QIODevice::ReadWrite | QIODevice::Text)) {
     QTextStream txt_stream(&txtfile);
+    // auto fptr = txtfile.map(0, txtfile.size() / 4);
     ui->textEdit->clear();
-    ui->textEdit->setPlainText(txt_stream.readAll());
+    ui->textEdit->setPlainText(txtfile.readAll());
     // const int chunkSize = 1024; // 例如，每次读取 1 KB
     // QByteArray buffer(chunkSize, '\0');
 

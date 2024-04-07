@@ -7,6 +7,7 @@
 #include <QWebEnginePage>
 #include <QTimer>
 #include <QtConcurrent/QtConcurrent>
+#include <QIcon>
 
 #include <thread>
 #include <iostream>
@@ -23,6 +24,8 @@ QGOPDD::QGOPDD(QWidget *parent)
     , ui(new Ui::QGOPDD)
 {
   ui->setupUi(this);
+  QIcon icon(":/icon/QGOPDD.ico");
+  this->setWindowIcon(icon);
   // connect(this, QGOPDD::StartDownloading(QDate&, QDate, QProgressBar*, int), this->progress_caller, ProgressCaller::SetProgress);
   // ui->TableWidgetAddedStas->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
   ui->ComboSeleSta->setEditable(true);

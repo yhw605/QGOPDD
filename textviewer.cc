@@ -8,6 +8,7 @@ TextViewer::TextViewer(QWidget *parent)
     , ui(new Ui::TextViewer)
 {
   ui->setupUi(this);
+  this->setWindowIcon(QIcon(":/icon/QGOPDD.ico"));
   ui->mdiArea->setTabsMovable(true);
   this->setWindowTitle("Rinex Viewer");
   // setCentralWidget(ui->mdiArea);
