@@ -8,7 +8,7 @@
 #include <mutex>
 #include <QThread>
 const QString MINIGZIP_PATH = "./thirdparty/zlib/minigzip ";
-const QString CRX2RNX_PATH = "./thirdparty/hatanaka/rnxcmp/source/CRX2RNX";
+const QString CRX2RNX_PATH = "./thirdparty/hatanaka/rnxcmp/source/CRX2RNX ";
 // #include "curl/curl.h"
 
 

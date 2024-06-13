@@ -297,19 +297,27 @@ void QGOPDD::StartDownloading(QDate &curr_date, QDate &end_date, int &daydiff) {
 }
 
 void Crx2Rnx(QString path) {
+  qDebug() << "In Crx Dir";
+  qDebug() << path;
+  Sleep(1000);
   QDir dir(path);
   if (!dir.exists()) {
     qDebug() << "The file is not exsit.";
     return;
   }
+  auto e = dir.entryList();
+  for (auto ee : e) {
+    qDebug() << ee;
+  }
   QStringList filters;
-  filters<< "*.crx"  << "*.rnx" << "*.sp3" << "*.eph" << "*.*o" << "*.*p" << "*.*n";
+  filters << "*.crx";//   << "*.rnx" << "*.sp3" << "*.eph" << "*.*o" << "*.*p" << "*.*n";
   // filters.append("*.rnx.gz"), filters.append("*.sp3.gz");
   // filters.append("*.eph.gz"), filters.append("*.*o.gz");
   // filters.append("*.*n.gz"), filters.append("*.*p.gz");
   QDir::Filters filter_flags = QDir::Files | QDir::NoSymLinks;
   QDir::SortFlags sort_flags = QDir::Name;
   QFileInfoList entries = dir.entryInfoList(filters, filter_flags, sort_flags);
+  qDebug() << entries.size();
   for (auto& entry : entries) {
     auto filename = entry.absoluteFilePath();
     qDebug() << "Crx File: " << filename;
@@ -317,6 +325,7 @@ void Crx2Rnx(QString path) {
     QProcess* process = new QProcess();
     args_crx << filename;
     process->start(CRX2RNX_PATH, args_crx);
+    qDebug() << process->state();
   }
 }
 
